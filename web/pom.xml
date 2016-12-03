@@ -1,0 +1,284 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.jason</groupId>
+    <artifactId>web</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>web</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <resourceDirectory>${project.basedir}/src/main/resources</resourceDirectory>
+        <testResourceDirectory>${project.basedir}/src/test/resources</testResourceDirectory>
+        <webAppDictionary>${project.basedir}/src/main/webapp</webAppDictionary>
+
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test${pom.build.outputDirectory}</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>0.1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
+        </dependency>
+
+    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>RELEASE</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <env>local</env>
+                <!--日志根目录-->
+                <logger.path>${basedir}</logger.path>
+                <!--log 异步同步数据库配置-->
+                <logger.jdbc.url>jdbc:mysql://192.168.150.129:3306/logger</logger.jdbc.url>
+                <logger.user>logger</logger.user>
+                <logger.password>logger</logger.password>
+                <!--tocmat热部署配置-->
+                <tomcat.deploy.url>http://127.0.0.1:8080/manager/text</tomcat.deploy.url>
+                <tomcat.deploy.username>tomcat</tomcat.deploy.username>
+                <tomcat.deploy.password>tomcat</tomcat.deploy.password>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <env>dev</env>
+                <!--日志根目录-->
+                <env>f:</env>
+                <!--log 异步同步数据库配置-->
+                <logger.jdbc.url>jdbc:mysql://192.168.150.129:3306/logger</logger.jdbc.url>
+                <logger.user>logger</logger.user>
+                <logger.password>logger</logger.password>
+                <!--tocmat热部署配置-->
+                <tomcat.deploy.url>http://127.0.0.1:8080/manager/text</tomcat.deploy.url>
+                <tomcat.deploy.username>tomcat</tomcat.deploy.username>
+                <tomcat.deploy.password>tomcat</tomcat.deploy.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <env>test</env>
+                <!--日志根目录-->
+                <env>/</env>
+                <!--log 异步同步数据库配置-->
+                <logger.jdbc.url>jdbc:mysql://192.168.150.129:3306/logger</logger.jdbc.url>
+                <logger.user>logger</logger.user>
+                <logger.password>logger</logger.password>
+                <!--tocmat热部署配置-->
+                <tomcat.deploy.url>http://127.0.0.1:8080/manager/text</tomcat.deploy.url>
+                <tomcat.deploy.username>tomcat</tomcat.deploy.username>
+                <tomcat.deploy.password>tomcat</tomcat.deploy.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+                <!--日志根目录-->
+                <env>/</env>
+                <!--log 异步同步数据库配置-->
+                <logger.jdbc.url>jdbc:mysql://192.168.150.129:3306/logger</logger.jdbc.url>
+                <logger.user>logger</logger.user>
+                <logger.password>logger</logger.password>
+                <!--tocmat热部署配置-->
+                <tomcat.deploy.url>http://127.0.0.1:8080/manager/text</tomcat.deploy.url>
+                <tomcat.deploy.username>tomcat</tomcat.deploy.username>
+                <tomcat.deploy.password>tomcat</tomcat.deploy.password>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <finalName>${artifactId}</finalName>
+        <resources>
+            <!--添加resource 移除所有环境配置文件-->
+            <resource>
+                <directory>${resourceDirectory}</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>env/**</exclude>
+                </excludes>
+            </resource>
+            <!--添加当前生效的环境配置文件-->
+            <resource>
+                <directory>${resourceDirectory}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>env/${env}/**</include>
+                </includes>
+
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <!--compile-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+            </plugin>
+
+            <!--打war 包-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>${build.directory}/classes</directory>
+                            <filtering>true</filtering>
+                            <excludes>
+                                <exclude>env/${env}/context.xml</exclude>
+                            </excludes>
+                            <targetPath>/WEB-INF/classes</targetPath>
+                        </resource>
+                    </webResources>
+
+                    <packagingExcludes>
+                        WEB-INF/classes/env/${env}/context.xml,
+                        WEB-INF/lib/commons-logging-*.jar,
+                        %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]
+                    </packagingExcludes>
+                </configuration>
+            </plugin>&ndash;&gt;-->
+
+            <!--自定义打包-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <finalName>assemblyDemo</finalName>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+
+
+            <!--jetty pugin-->
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.26</version>
+                <configuration>
+                    <webAppConfig>
+                        <!--webapp class路径-->
+                        <extraClasspath>${build.outputDirectory}</extraClasspath>
+                    </webAppConfig>
+                    <!--扫描目标-->
+                    <scanTargets>
+                        <!--热部署-->
+                        <scanTarget>${build.outputDirectory}</scanTarget>
+                    </scanTargets>
+                    <!--扫描时间间隔-->
+                    <scanIntervalSeconds>3</scanIntervalSeconds>
+                    <!--<jettyEnvXml>${build.outputDirectory}/jetty-env.xml</jettyEnvXml>-->
+                    <webAppSourceDirectory>${webAppDictionary}</webAppSourceDirectory>
+                    <reload>manual</reload>
+                    <contextPath>/</contextPath>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>80</port>
+                        </connector>
+                    </connectors>
+                    <webDefaultXml>
+                    </webDefaultXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <!--tomcat manager 字符编码-->
+                    <charset>${encoding}</charset>
+                    <!--URI的字符编码 -->
+                    <uriEncoding>${encoding}</uriEncoding>
+                    <!--设定tomcat服务器可以传递中文参数-->
+                    <!--<useBodyEncodingForURI>true</useBodyEncodingForURI>-->
+                    tomcat 运行时 加载数据xmnl
+                    <contextFile>env/${env}/context.xml</contextFile>
+                    <contextReloadable>true</contextReloadable>
+                    <!--<backgroundProcessorDelay>60</backgroundProcessorDelay>-->
+                    <url>${tomcat.deploy.url}</url>
+                    <username>${tomcat.deploy.username}</username>
+                    <password>${tomcat.deploy.password}</password>
+                    <path>/${project.artifactId}</path>
+                    <port>8101</port>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
